@@ -1,0 +1,6 @@
+# 不要把密钥或本地配置提交到 GitHub
+.env
+*.env
+__pycache__/
+*.pyc
+.DS_Store
