@@ -1,61 +1,115 @@
 # my-first-agent
 
-我的第一个 Agent 雏形：一个能在命令行里和大模型对话的 Python 脚本。
+> 一个不会写代码的大专生，从零手写出的**三个 Agent**，一步步集齐「Agent 三件套」。
+> 每个脚本都跑通验证过，代码零依赖（只用 Python 标准库），任何装了 Python 的电脑都能运行。
 
-## 它做了什么
+---
 
-你输入一句话 → 脚本把这句话发给大模型 API → 模型返回回答，打印出来。
-这就是你学过的 **输入 → 处理 → 输出**，只不过这次你看得见代码。
+## 这是什么
+
+这是一段**学习记录**，也是我的**第一个作品集项目**。
+
+我用最直白的方式，亲手验证了 AI Agent 到底是什么——
+不是魔法，而是：**大模型（脑子）+ 记忆（笔记本）+ 工具（手）**。
+
+仓库里三个脚本，是同一个 Agent 的三次进化：
+
+| 文件 | 版本 | 新增能力 | 对应 Agent 部件 |
+|------|------|---------|----------------|
+| `chat.py` | 最小 Agent | 调通大模型 API，能对话 | 模型（脑子） |
+| `chat_with_memory.py` | 带记忆 | 记住上下文（比如你的名字） | 记忆（笔记本） |
+| `chat_with_tools.py` | 带工具 | 能读本地文件再回答 | 工具（手） |
+
+从「只会动的嘴」到「有脑子、有记忆、有手」，三个文件就是 Agent 的成长史。
+
+---
+
+## Agent 三件套（核心认知）
+
+```
+模型（脑子）  →  负责"想"，生成文字
+记忆（笔记本）→  代码把每轮对话存进列表，每次重新发给模型，它才"显得"记得
+工具（手）    →  Python 函数，模型需要时"点名"调用，代码执行后把结果塞回对话
+```
+
+> 记忆不是模型自己记住，是**你的代码**把聊过的每一轮存起来、每次重新发给它。
+> 工具不是模型能碰文件，是**你的代码**提供函数，模型说"我要用"，代码去执行。
+
+---
 
 ## 你需要准备
 
-1. **Python 3.8+**（你电脑一般自带，命令行输入 `python3 --version` 检查）
-2. **一个大模型 API Key**（推荐 DeepSeek，便宜，国内可达）
+1. **Python 3.8+**（命令行输入 `python --version` 检查；Windows 上命令是 `python` 不是 `python3`）
+2. **一个阿里云百炼 API Key**（通义千问有免费额度，新用户够跑很多次）
 
-### 怎么拿到 DeepSeek Key
+### 怎么拿到百炼 Key
 
-1. 打开 https://platform.deepseek.com 注册登录
-2. 右上角 →「API Keys」→ 创建 Key（形如 `sk-xxxx`）
-3. 首次充值约 ¥1–10 就能跑很多次（按 token 计费，很便宜）
+1. 打开 https://bailian.console.aliyun.com 登录
+2. 右上角头像 → **API Key 管理** → 创建 Key（形如 `sk-xxxx`）
 
-> 想用 Kimi / 通义 / OpenAI 也行，接口都兼容，只改 `chat.py` 里的 `API_URL` 和密钥名。
+---
 
 ## 怎么运行
 
-先把密钥放进环境变量（Mac/Linux 终端）：
-
-```bash
-export DEEPSEEK_API_KEY="sk-你的key"
-python3 chat.py
-```
-
-Windows（PowerShell）：
+先把密钥放进环境变量（**设完这一步不会有任何输出，是正常的**）：
 
 ```powershell
-$env:DEEPSEEK_API_KEY="sk-你的key"
-python3 chat.py
+# Windows PowerShell
+$env:DASHSCOPE_API_KEY="sk-你的百炼key"
 ```
-
-然后就能对话了，输入 `exit` 退出。
-
-## 怎么连到 GitHub（这周第 ① 件事）
-
-1. 去 https://github.com 注册，新建一个空仓库，名字就叫 `my-first-agent`
-2. 在本文件夹里执行：
 
 ```bash
-git init
-git add .
-git commit -m "my first agent: 调用大模型 API 的对话脚本"
-git branch -M main
-git remote add origin https://github.com/你的用户名/my-first-agent.git
-git push -u origin main
+# Mac / Linux
+export DASHSCOPE_API_KEY="sk-你的百炼key"
 ```
 
-推上去之后，这个仓库就是你的**第一个作品集项目**——面试时能给人看"我会调 API、会写 Agent、会用 Git"。
+### ① 最小 Agent（验证对话）
+```bash
+python chat.py
+```
+试试：`我叫小明` → 再问 `我刚说我叫啥？`（它答不上来，因为没记忆）
 
-## 进阶方向（学完基础后）
+### ② 带记忆的 Agent（验证记忆）
+```bash
+python chat_with_memory.py
+```
+同样两句，它能答 `你叫小明`。
 
-- 让 Agent 能「调用工具」（查天气、读文件）→ Function Calling
-- 给它一个文档，让它基于文档回答 → RAG
-- 把它做成网页或接口 → FastAPI + 部署
+### ③ 带工具的 Agent（验证工具）
+```bash
+python chat_with_tools.py
+```
+试试：`notes.txt 里写了什么？`
+你会看到它**先想"我要读文件" → 代码执行 read_file → 把内容塞回 → 它再基于内容回答**。
+
+任意脚本里输入 `exit` 退出。
+
+---
+
+## 怎么换模型
+
+打开对应脚本，改这一行：
+
+```python
+"model": "qwen-plus",   # qwen-turbo 更便宜 / qwen-max 更强 / qwen-long 长文本
+```
+
+---
+
+## 我学到的（也是这份仓库想展示的）
+
+- **Agent 不是黑盒**：它 = 模型 + 记忆 + 工具，每一块都能用几十行代码写明白
+- **不会写代码也能起步**：我的第一个脚本是别人帮我写的，但我跑通、改过、理解了
+- **作品集 > 学历**：这三个能跑的 Agent，比一张"我学过 AI"的截图有用得多
+
+---
+
+## 进阶方向
+
+- 给它一个文档，让它基于文档回答 → **RAG**
+- 让模型自己决定调用多个工具、排步骤 → **规划 / ReAct 循环**
+- 把它做成网页或接口 → **FastAPI + 部署**
+
+---
+
+*作者：一名正在转向 Agent 应用开发的大专大三学生。这是作品集的第一个项目。*
